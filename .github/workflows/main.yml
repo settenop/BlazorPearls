@@ -19,4 +19,4 @@ jobs:
       - name: Deploy NuGet package
         run: |
           dotnet pack BlazorPearls.sln -p:PackageVersion=$(git show -s --format=%cd --date=format:'%Y.%m.%d.%H%M' $CI_COMMIT_SHA) -c Release
-          dotnet nuget push "PearlsComponents/bin/Release/*.nupkg" -k ${{secrets.NUGET_TOKEN}}
+          dotnet nuget push "PearlsComponents/bin/Release/*.nupkg" -k ${{secrets.NUGET_TOKEN}} --source nuget.org
