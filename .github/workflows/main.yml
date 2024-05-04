@@ -1,0 +1,18 @@
+name: NuGet Generation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: mcr.microsoft.com/dotnet/sdk:8.0-alpine
+    name: Update NuGet package
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1  
+      - name: Deploy NuGet package
+        run: |
+          dotnet pack BlazorPearls.sln -p:PackageVersion=$(git show -s --format=%cd --date=format:'%Y.%m.%d.%H%M' $CI_COMMIT_SHA) -c Release
+          dotnet nuget push "PearlsComponents/bin/Release/*.nupkg" -k ${{secrets.NUGET_TOKEN}}
