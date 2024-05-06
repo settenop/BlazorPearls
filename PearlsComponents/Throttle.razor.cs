@@ -3,6 +3,14 @@ using System.Diagnostics;
 
 namespace PearlsComponents {
     public partial class Throttle<T> : ComponentBase {
+
+        protected override void OnParametersSet() {
+            base.OnParametersSet();
+            if (scheduledTask == null) { 
+                _internalValue = Value;
+            }
+        }
+
         [Parameter]
         public T Value { get; set; } = default!;
 
