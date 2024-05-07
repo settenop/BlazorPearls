@@ -1,0 +1,15 @@
+﻿@page "/throttle-demo"
+
+<h3>ThrottleDemo</h3>
+
+<p>ThrottleDemo is a demo page for the Throttle component.</p>
+
+<h4>Inside throttle</h4>
+<Throttle @bind-Value="userInput" Interval="250">
+    <input @bind-value="context.ThrottledValue" @bind-value:event="oninput" />
+    <p>Value inside Throttle: @context.ThrottledValue</p>
+</Throttle>
+
+<h4>Outside throttle</h4>
+<input @bind-value="userInput" @bind-value:event="oninput" />
+<p>Value outside Throttle: @userInput</p>

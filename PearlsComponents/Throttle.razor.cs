@@ -4,10 +4,16 @@ using System.Diagnostics;
 namespace PearlsComponents {
     public partial class Throttle<T> : ComponentBase {
 
+        private T? oldValue = default!;
+
         protected override void OnParametersSet() {
             base.OnParametersSet();
-            if (scheduledTask == null) { 
-                _internalValue = Value;
+            if (!EqualityComparer<T>.Default.Equals(oldValue, Value)) {
+                if (!EqualityComparer<T>.Default.Equals(lastInvokedWith, Value)) {
+                    _internalValue = Value;
+                }
+                lastInvokedWith = default;
+                oldValue = Value;
             }
         }
 
@@ -33,7 +39,7 @@ namespace PearlsComponents {
                 if (EqualityComparer<T>.Default.Equals(value, _internalValue)) {
                     return;
                 }
-
+                
                 _internalValue = value;
 
                 ScheduleOrTriggerChange();
@@ -56,12 +62,15 @@ namespace PearlsComponents {
             await TriggerChange();
         }
 
-        private Task TriggerChange() {
+        private T? lastInvokedWith = default!;
+        private async Task TriggerChange() {
             if (Stopwatch.GetElapsedTime(lastInvokeAt).TotalMilliseconds < Interval) {
-                return Task.CompletedTask;
+                return;
             }
             lastInvokeAt = Stopwatch.GetTimestamp();
-            return InvokeAsync(async () => {
+            
+            await InvokeAsync(async () => {
+                lastInvokedWith = ThrottledValue;
                 await ValueChanged.InvokeAsync(ThrottledValue);
                 await IsThrottlingChanged.InvokeAsync(false);
                 scheduledTask = null;
